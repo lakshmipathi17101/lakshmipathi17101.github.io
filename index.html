@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Venkat Lakshmipathi Varma Konduri</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Senior Software Engineer building computer vision, biometrics and edge AI systems that run on real devices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a camera viewfinder. The hero frames the person like a detection box; every section below reads like an inference log with real units. */
+:root {
+  --bg: #F2F4F6;
+  --surface: #FFFFFF;
+  --ink: #121A22;
+  --muted: #56636F;
+  --line: #D5DCE2;
+  --accent: #B86A00;      /* detection-box amber */
+  --accent-soft: #F6E7CF;
+  --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --s1: .8125rem; --s2: .9375rem; --s3: 1.0625rem; --s4: 1.375rem; --s5: 2rem; --s6: clamp(2.4rem, 6vw, 4.2rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1318; --surface: #141C23; --ink: #E6ECF1; --muted: #93A1AD; --line: #24313B;
+    --accent: #F2A93B; --accent-soft: #2A2114; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1318; --surface: #141C23; --ink: #E6ECF1; --muted: #93A1AD; --line: #24313B;
+  --accent: #F2A93B; --accent-soft: #2A2114; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--body); font-size: var(--s2); line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h2 { font-size: var(--s5); font-weight: 600; }
+h3 { font-size: var(--s3); font-weight: 600; }
+p { margin: 0; }
+a { color: var(--accent); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+.label { font-family: var(--mono); font-size: var(--s1); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ---------- top bar ---------- */
+.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.top nav { display: flex; gap: 20px; flex-wrap: wrap; }
+.top nav a { color: var(--muted); text-decoration: none; font-family: var(--mono); font-size: var(--s1); letter-spacing: .06em; text-transform: uppercase; }
+.top nav a:hover { color: var(--ink); }
+.rec { display: inline-flex; align-items: center; gap: 8px; }
+.rec::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: blink 1.6s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+
+/* ---------- hero: viewfinder ---------- */
+.hero { display: grid; gap: 28px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); gap: clamp(28px, 5vw, 64px); align-items: center; }
+.intro { min-width: 0; }
+.photo { position: relative; padding: 14px; justify-self: end; width: 100%; }
+.photo img { display: block; width: 100%; max-width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+.photo i { position: absolute; width: 26px; height: 26px; border-color: var(--accent); border-style: solid; }
+.photo .c1 { top: 0; left: 0; border-width: 2px 0 0 2px; }
+.photo .c2 { top: 0; right: 0; border-width: 2px 2px 0 0; }
+.photo .c3 { bottom: 0; left: 0; border-width: 0 0 2px 2px; }
+.photo .c4 { bottom: 0; right: 0; border-width: 0 2px 2px 0; }
+.tag {
+  position: absolute; top: -11px; left: 30px; background: var(--accent); color: var(--bg);
+  font-family: var(--mono); font-size: .75rem; padding: 2px 8px; letter-spacing: .04em;
+}
+.caption { position: absolute; bottom: -11px; right: 30px; background: var(--bg); color: var(--muted); font-family: var(--mono); font-size: .72rem; padding: 2px 8px; }
+.hero h1 { font-size: var(--s6); font-weight: 700; letter-spacing: -.01em; }
+.hero h1 span { display: block; color: var(--muted); font-weight: 500; font-size: .5em; letter-spacing: .02em; margin-bottom: 10px; }
+.lede { font-size: var(--s3); max-width: 62ch; margin-top: 20px; color: var(--ink); }
+.meta { display: flex; flex-wrap: wrap; gap: 10px 24px; margin-top: 24px; }
+.meta .mono { font-size: var(--s1); color: var(--muted); }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.btn {
+  font-family: var(--mono); font-size: var(--s1); letter-spacing: .04em; text-decoration: none;
+  padding: 10px 16px; border: 1px solid var(--ink); color: var(--ink); background: transparent; cursor: pointer;
+}
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn:hover { border-color: var(--accent); }
+.scan {
+  position: absolute; left: 14px; right: 14px; height: 1px; top: 30%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: .45;
+  animation: scan 6s ease-in-out infinite alternate;
+}
+@keyframes scan { from { top: 12%; } to { top: 88%; } }
+
+/* telemetry strip */
+.telemetry { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--line); }
+.telemetry div { padding: 16px 12px; display: grid; gap: 4px; }
+.telemetry div + div { border-left: 1px solid var(--line); }
+.telemetry b { font-family: var(--display); font-size: var(--s4); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- section heads ---------- */
+.sec { display: grid; gap: 28px; }
+.sec-head { display: grid; gap: 8px; max-width: 65ch; }
+.sec-head p { color: var(--muted); }
+
+/* ---------- impact log ---------- */
+.log { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.log article { background: var(--surface); padding: 22px 20px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.log .metric { font-family: var(--display); font-size: var(--s4); font-weight: 600; color: var(--accent); line-height: 1.2; font-variant-numeric: tabular-nums; }
+.log p { color: var(--ink); }
+
+/* ---------- experience ---------- */
+.role { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 24px; padding-top: 24px; border-top: 1px solid var(--line); }
+.role .when { display: grid; gap: 4px; align-content: start; }
+.steps { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.steps li { display: grid; grid-template-columns: 14px minmax(0, 1fr); gap: 12px; }
+.steps li::before { content: ""; width: 10px; height: 10px; margin-top: 7px; border: 2px solid var(--accent); }
+.steps li:first-child::before { background: var(--accent); }
+.steps .span { font-family: var(--mono); font-size: var(--s1); color: var(--muted); }
+.role-notes { margin-top: 20px; display: grid; gap: 8px; color: var(--ink); }
+.role-notes li { margin-left: 18px; }
+
+/* ---------- projects ---------- */
+.projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px 36px; }
+.proj { display: grid; gap: 8px; min-width: 0; }
+.proj .k { font-family: var(--mono); font-size: var(--s1); color: var(--accent); }
+.proj p { color: var(--muted); }
+
+/* ---------- skills ---------- */
+.skills { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 28px 36px; }
+.skill { display: grid; gap: 12px; min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips span { font-family: var(--mono); font-size: .78rem; padding: 3px 8px; border: 1px solid var(--line); background: var(--surface); }
+
+/* ---------- edu + recognition ---------- */
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 36px; }
+.plain { margin: 0; padding-left: 18px; display: grid; gap: 8px; }
+
+/* ---------- contact ---------- */
+.contact { border: 1px solid var(--ink); padding: clamp(20px, 4vw, 40px); display: grid; gap: 20px; position: relative; }
+.contact h2 { font-size: var(--s5); }
+.rows { display: grid; gap: 12px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.row .label { width: 90px; }
+.row .val { font-family: var(--mono); font-size: var(--s2); user-select: all; overflow-wrap: anywhere; }
+.copy { font-family: var(--mono); font-size: .75rem; padding: 4px 10px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; }
+.copy:hover { color: var(--ink); border-color: var(--ink); }
+footer { color: var(--muted); font-size: var(--s1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+@media (max-width: 720px) {
+  .telemetry { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .telemetry div:nth-child(3) { border-left: 0; }
+  .telemetry div:nth-child(n+3) { border-top: 1px solid var(--line); }
+  .role { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .wrap { gap: 56px; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .photo { order: -1; justify-self: start; max-width: 240px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan, .rec::before { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <span class="label rec">Bengaluru, India · open to roles</span>
+    <nav aria-label="Sections">
+      <a href="#impact">Impact</a>
+      <a href="#experience">Experience</a>
+      <a href="#work">Work</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <section class="hero" aria-labelledby="name">
+    <div class="hero-grid">
+      <div class="intro">
+        <h1 id="name"><span>Venkat Lakshmipathi Varma Konduri</span>I ship computer vision that runs on the device, not in the demo.</h1>
+        <p class="lede">Senior Software Engineer at Apra Labs. For almost six years I have built biometric face recognition, edge inference and the cloud services around them, from Jetson carrier boards up to Azure pipelines that process millions of identities.</p>
+        <div class="meta">
+          <span class="mono">5.9 yrs experience</span>
+          <span class="mono">C++ · Python · TypeScript</span>
+          <span class="mono">TensorRT · CUDA · Jetson</span>
+          <span class="mono">LLM · RAG · Agents</span>
+        </div>
+        <div class="cta">
+          <a class="btn primary" href="#contact">Get in touch</a>
+          <a class="btn" href="https://linkedin.com/in/varmakvl" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+      <figure class="photo" style="margin:0">
+        <i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i>
+        <span class="tag">face · conf 0.98</span>
+        <div class="scan" aria-hidden="true"></div>
+        <img src="photo.jpg" width="640" height="800" alt="Portrait of Venkat Lakshmipathi Varma Konduri in a dark suit and tie">
+        <span class="caption">id: varmakvl</span>
+      </figure>
+    </div>
+
+    <div class="telemetry" role="list" aria-label="Headline numbers">
+      <div role="listitem"><span class="label">Edge devices</span><b>300+</b><span class="mono" style="font-size:var(--s1);color:var(--muted)">5 countries</span></div>
+      <div role="listitem"><span class="label">Identities</span><b>9M+</b><span class="mono" style="font-size:var(--s1);color:var(--muted)">templates processed</span></div>
+      <div role="listitem"><span class="label">Inference</span><b>60 FPS</b><span class="mono" style="font-size:var(--s1);color:var(--muted)">up to 10x faster</span></div>
+      <div role="listitem"><span class="label">On-device ASR</span><b>&lt;400 ms</b><span class="mono" style="font-size:var(--s1);color:var(--muted)">from ~2 s in cloud</span></div>
+    </div>
+  </section>
+
+  <section class="sec" id="impact" aria-labelledby="impact-h">
+    <div class="sec-head">
+      <span class="label">Impact log</span>
+      <h2 id="impact-h">Measured results from production</h2>
+      <p>Each entry is something that shipped and was used by customers, with the number we tracked.</p>
+    </div>
+    <div class="log">
+      <article><span class="metric">300+ devices · 3 hardware variants</span><p>Owned the Person Reader biometric face recognition platform end to end: architecture, roadmap, releases and field support across five countries.</p></article>
+      <article><span class="metric">9M+ identities</span><p>Scaled biometric template processing. Designed the first VM architecture, then moved it to containerized Azure Durable Functions.</p></article>
+      <article><span class="metric">up to 10x faster · 60 / 30 FPS</span><p>Optimized EfficientNet models with TensorRT and rebuilt the pipeline around CUDA and cuDNN on Jetson Nano and Orin. 60 FPS without depth, 30 FPS with depth.</p></article>
+      <article><span class="metric">~30% fewer false enrollments</span><p>Built a template quality and maturity model that scores each enrollment and filters weak templates before they reach matching.</p></article>
+      <article><span class="metric">~80% lower latency</span><p>Moved Whisper speech recognition from the cloud to local inference on Jetson Orin Nano and paired it with LLM function calling. About 2 s down to under 400 ms.</p></article>
+      <article><span class="metric">40+ controllers recovered</span><p>Wrote a command sweep service that stops duplicate command delivery to edge devices, cutting downtime by about 60%.</p></article>
+      <article><span class="metric">manual labeling removed</span><p>AI-assisted auto labeling with GPT, Grounded SAM and Stable Diffusion to generate training data for YOLOv8 fine-tuning.</p></article>
+      <article><span class="metric">3 engineers · 4 product tracks</span><p>Mentored three engineers to own production components and kept four product tracks releasing while acting as primary responder for global incidents.</p></article>
+    </div>
+  </section>
+
+  <section class="sec" id="experience" aria-labelledby="exp-h">
+    <div class="sec-head">
+      <span class="label">Experience</span>
+      <h2 id="exp-h">Apra Labs, Bengaluru</h2>
+    </div>
+    <div class="role">
+      <div class="when">
+        <span class="mono">Dec 2020 – present</span>
+        <span class="label">Biometrics · Edge AI · IoT</span>
+      </div>
+      <div>
+        <ol class="steps">
+          <li><div><h3>Senior Software Engineer</h3><span class="span">Jul 2025 – present</span></div></li>
+          <li><div><h3>Software Engineer</h3><span class="span">Jul 2021 – Jun 2025</span></div></li>
+          <li><div><h3>Embedded and Computer Vision Intern</h3><span class="span">Dec 2020 – Jun 2021</span></div></li>
+        </ol>
+        <ul class="role-notes">
+          <li>Spent more than two months on site in Boston on architecture and field investigation, plus live site sessions in New York.</li>
+          <li>Worked daily with hardware, QA and customer engineering teams in the US and Argentina.</li>
+          <li>Contributor to ApraPipes, the company's open-source C++ media and vision framework.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="work" aria-labelledby="work-h">
+    <div class="sec-head">
+      <span class="label">Selected work</span>
+      <h2 id="work-h">Systems I built or led</h2>
+    </div>
+    <div class="projects">
+      <div class="proj"><span class="k">vision · security</span><h3>Depth-based liveness detection</h3><p>Presentation attack detection on Intel RealSense depth, so a printed photo or screen cannot pass as a face.</p></div>
+      <div class="proj"><span class="k">platform migration</span><h3>Jetson Nano to Orin</h3><p>Moved the reader fleet across a major JetPack and Ubuntu jump, regenerating TensorRT engines and keeping devices in the field working.</p></div>
+      <div class="proj"><span class="k">vision · identity</span><h3>Auto ID pipeline</h3><p>Facial landmarks, profile photo mismatch detection and confidence scoring to automate identity checks.</p></div>
+      <div class="proj"><span class="k">genai · video</span><h3>Agentic RAG for video analytics</h3><p>CV preprocessing, segmentation and tracking feeding agentic retrieval pipelines that summarize and answer questions about video.</p></div>
+      <div class="proj"><span class="k">embedded linux</span><h3>Yocto kiosk platform</h3><p>Kernel, drivers, device tree and 2K display support for a custom kiosk build, with A/B signed boot.</p></div>
+      <div class="proj"><span class="k">iot · telemetry</span><h3>Elevator sensor analytics</h3><p>Rust on I2C sensors, Node.js and TypeScript services and Cosmos DB, with sensor fusion across barometric, gyro, temperature and light data.</p></div>
+      <div class="proj"><span class="k">accessibility</span><h3>SIP and WebRTC intercom</h3><p>Intercom and accessibility workflows for blind and visually impaired users.</p></div>
+      <div class="proj"><span class="k">fleet ops</span><h3>Remote recovery tooling</h3><p>Diagnostic CLIs, watchdogs, RPort and SSH access and rollback-aware installers for devices that cannot be visited.</p></div>
+      <div class="proj"><span class="k">integrations</span><h3>Access control and dispatch</h3><p>Card, QR and mobile Bluetooth credentials, plus Destination Dispatch integration with Otis and TKE elevators.</p></div>
+    </div>
+  </section>
+
+  <section class="sec" id="skills" aria-labelledby="skills-h">
+    <div class="sec-head">
+      <span class="label">Stack</span>
+      <h2 id="skills-h">Tools I use in production</h2>
+    </div>
+    <div class="skills">
+      <div class="skill"><h3>Computer vision and biometrics</h3><div class="chips"><span>Face recognition</span><span>Face detection</span><span>Facial landmarks</span><span>Liveness / PAD</span><span>Template quality</span><span>YOLOv8</span><span>EfficientNet</span><span>Object tracking</span><span>OpenCV</span><span>Grounded SAM</span><span>Stable Diffusion</span></div></div>
+      <div class="skill"><h3>Inference and optimization</h3><div class="chips"><span>PyTorch</span><span>TensorFlow</span><span>ONNX</span><span>TensorRT</span><span>CUDA</span><span>cuDNN</span><span>FP16 / INT8</span><span>Multithreading</span><span>MLOps</span><span>Retraining pipelines</span></div></div>
+      <div class="skill"><h3>LLMs and applied ML</h3><div class="chips"><span>RAG</span><span>Agentic workflows</span><span>Function calling</span><span>MCP</span><span>Vector search</span><span>pgvector</span><span>Whisper ASR</span><span>Multimodal models</span><span>Prompt engineering</span><span>LLMOps</span></div></div>
+      <div class="skill"><h3>Languages</h3><div class="chips"><span>C++ 11/17</span><span>Python</span><span>TypeScript</span><span>JavaScript</span><span>C#</span><span>Rust</span><span>SQL</span><span>Bash</span><span>PowerShell</span></div></div>
+      <div class="skill"><h3>Cloud and data</h3><div class="chips"><span>Azure Functions</span><span>Durable Functions</span><span>IoT Hub</span><span>Service Bus</span><span>Cosmos DB</span><span>Blob Storage</span><span>PostgreSQL</span><span>SQL Server</span><span>MongoDB</span><span>Redis</span><span>MQTT</span></div></div>
+      <div class="skill"><h3>Edge and embedded</h3><div class="chips"><span>Jetson Orin NX / Nano</span><span>JetPack 4 and 6</span><span>Yocto</span><span>Embedded Linux</span><span>V4L2 / UVC</span><span>I2C</span><span>RealSense</span><span>BLE</span><span>Sensor fusion</span></div></div>
+      <div class="skill"><h3>Applications and delivery</h3><div class="chips"><span>Node.js</span><span>Express</span><span>React</span><span>Next.js</span><span>Electron</span><span>.NET Core</span><span>REST APIs</span><span>WebRTC</span><span>Docker</span><span>Azure DevOps CI/CD</span></div></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-labelledby="edu-h">
+    <div class="two">
+      <div class="sec-head" style="gap:14px">
+        <span class="label">Education</span>
+        <h2 id="edu-h">IIIT Naya Raipur</h2>
+        <p style="color:var(--ink)">B.Tech, Electronics and Communication Engineering, 2017 – 2021</p>
+        <p class="mono">CGPA 9.23 / 10</p>
+        <p>Head of R&amp;D at COMET. Winner of Dizhard / Technovate 2020 and runner-up in 2019.</p>
+      </div>
+      <div class="sec-head" style="gap:14px">
+        <span class="label">Recognition</span>
+        <h2>Awards at Apra Labs</h2>
+        <ul class="plain">
+          <li>Customer Champion award</li>
+          <li>Cross Team Collaboration award</li>
+          <li>Nominated for the Leadership Team Development Program</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact" id="contact" aria-labelledby="contact-h">
+    <span class="label">Contact</span>
+    <h2 id="contact-h">Hiring for computer vision, edge AI or AI backend work?</h2>
+    <p style="max-width:60ch">I am based in Bengaluru, open to roles across India and available to join immediately.</p>
+    <div class="rows">
+      <div class="row"><span class="label">Email</span><span class="val" id="email">kvlpvarma7@gmail.com</span><button class="copy" type="button" data-copy="email" id="copy-email">Copy</button></div>
+      <div class="row"><span class="label">LinkedIn</span><a class="val" href="https://linkedin.com/in/varmakvl" target="_blank" rel="noopener">linkedin.com/in/varmakvl</a></div>
+      <div class="row"><span class="label">Location</span><span class="val">Bengaluru, India</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Venkat Lakshmipathi Varma Konduri</span>
+    <span class="mono">Senior Software Engineer · Computer Vision · Edge AI</span>
+  </footer>
+</div>
+
+<script>
+document.querySelectorAll('.copy').forEach(function (b) {
+  b.addEventListener('click', function () {
+    var el = document.getElementById(b.dataset.copy);
+    var text = el.textContent.trim();
+    var done = function () { b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy'; }, 1500); };
+    var fallback = function () {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      b.textContent = 'Selected';
+      setTimeout(function () { b.textContent = 'Copy'; }, 1500);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+  });
+});
+</script>
+</body>
+</html>
